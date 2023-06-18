@@ -15,7 +15,7 @@ defmodule MetalTrackerScraping.BroadwayWork do
               default: [max_demand: 8, concurrency: 8]
             ],
             batchers: [
-              default: [batch_size: 8, concurrency: 8]
+              default: [batch_size: 8, concurrency: 1]
             ]
          ]
 
@@ -34,10 +34,9 @@ defmodule MetalTrackerScraping.BroadwayWork do
     :ok
   end
 
-  @spec handle_message(any, Broadway.Message.t(), any) :: Broadway.Message.t()
   def handle_message(_processor, message, _context) do
     #IO.inspect(message)
-
+    AlbumTracker.start(message.data)
     Broadway.Message.put_batch_key(message, message.data)
 
     #Broadway.Message.failed(message, "offline")
@@ -46,8 +45,9 @@ defmodule MetalTrackerScraping.BroadwayWork do
 
   def handle_batch(_batcher, [url], _batch_info, _context) do
     #Logger.info( " Batch Processor received  #{ message.data } " )
-    data = AlbumTracker.start(url.data)
-    IO.inspect(data)
+    #data = AlbumTracker.start(url.data)
+    IO.inspect(inspect([url]))
+    # IO.puts("312312")
     [url]
   end
 end
